@@ -15,11 +15,11 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="no-underline">
           <Image
-            src="/logo.jpeg"
+            src="/logo.png"
             alt="Pessoas Globais"
-            width={120}
-            height={40}
-            className="rounded-sm object-contain"
+            width={966}
+            height={246}
+            className="h-10 w-auto object-contain"
             priority
           />
         </Link>
