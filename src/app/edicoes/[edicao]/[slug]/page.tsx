@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import Image from 'next/image'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { PortableText } from '@portabletext/react'
@@ -63,14 +64,10 @@ function toCardProps(a: ArticleStub) {
 export default async function ArticlePage({ params }: PageProps) {
   const { edicao, slug } = await params
 
-  const [article, related] = await Promise.all([
-    client.fetch<Article | null>(articleQuery, { edicao, slug }),
-    client.fetch<ArticleStub[]>(relatedArticlesQuery, { categoria: '', slug }).catch(() => []),
-  ])
+  const article = await client.fetch<Article | null>(articleQuery, { edicao, slug })
 
   if (!article) notFound()
 
-  // Re-fetch related with correct category now that we have the article
   const relatedArticles = await client.fetch<ArticleStub[]>(relatedArticlesQuery, {
     categoria: article.categoria,
     slug: article.slug.current,
@@ -131,8 +128,7 @@ export default async function ArticlePage({ params }: PageProps) {
       {/* ── Cover image ── */}
       {coverUrl ? (
         <div className="relative aspect-[16/7] w-full overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={coverUrl} alt={article.titulo} className="h-full w-full object-cover" />
+          <Image src={coverUrl} alt={article.titulo} fill className="object-cover" sizes="100vw" priority />
           {article.legendaImagem && (
             <p className="absolute bottom-3 left-0 right-0 text-center font-body text-[13px] text-white/70">
               {article.legendaImagem}

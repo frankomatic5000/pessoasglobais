@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { client } from '@/sanity/lib/client'
@@ -56,11 +57,13 @@ export default async function HomePage() {
           {/* Left — cover image or gradient */}
           <div className="relative flex min-h-[420px] items-center justify-center overflow-hidden bg-gradient-to-br from-pg-navy-dark via-pg-navy to-pg-navy-light md:min-h-[600px]">
             {featured.imagemCapa && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={urlFor(featured.imagemCapa).width(900).quality(85).url()}
                 alt={featured.titulo}
-                className="absolute inset-0 h-full w-full object-cover"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority
               />
             )}
             <div className="absolute inset-0 bg-pg-navy/40" />
