@@ -94,7 +94,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
           {/* Badges */}
           <div className="mb-6 flex flex-wrap items-center gap-3">
-            <EditionBadge number={article.edicao.numero} theme={format(new Date(article.dataPublicacao || article.edicao.dataPublicacao), "MMMM yyyy", { locale: ptBR })} />
+            <EditionBadge number={article.edicao.numero} theme={format(new Date(article.dataPublicacao), "MMMM yyyy", { locale: ptBR })} />
             <span className="rounded-sm bg-pg-tag px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.15em] text-pg-muted">
               {article.categoria}
             </span>

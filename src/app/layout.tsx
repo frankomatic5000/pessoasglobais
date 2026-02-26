@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, DM_Sans, DM_Mono } from "next/font/google";
+import { NextIntlClientProvider } from 'next-intl'
+import { getMessages } from 'next-intl/server'
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/shared/Footer";
 import { WhatsAppFloat } from "@/components/shared/WhatsAppFloat";
@@ -28,20 +30,24 @@ export const metadata: Metadata = {
   description: "Histórias de empreendedores multiculturais, líderes da diáspora e pensadores globais.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const messages = await getMessages()
+
   return (
     <html lang="pt-BR">
       <body
         className={`${playfair.variable} ${dmSans.variable} ${dmMono.variable} antialiased`}
       >
-        <Navbar />
-        {children}
-        <Footer />
-        <WhatsAppFloat />
+        <NextIntlClientProvider messages={messages}>
+          <Navbar />
+          {children}
+          <Footer />
+          <WhatsAppFloat />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
