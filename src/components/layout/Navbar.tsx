@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 
 export function Navbar() {
@@ -12,22 +13,15 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 no-underline">
-          <svg width="36" height="36" viewBox="0 0 100 100" fill="none" aria-hidden="true">
-            <circle cx="50" cy="50" r="48" className="fill-pg-red" />
-            <circle cx="50" cy="36" r="13" className="fill-pg-navy" />
-            <path
-              d="M50 52 Q84 52 84 72 Q84 88 64 88 L36 88"
-              stroke="white"
-              strokeWidth="10"
-              fill="none"
-              strokeLinecap="round"
-            />
-          </svg>
-          <div className="flex flex-col leading-[1.1]">
-            <span className="font-display text-base font-normal text-white">Pessoas</span>
-            <span className="font-display text-base font-bold text-pg-red">Globais</span>
-          </div>
+        <Link href="/" className="no-underline">
+          <Image
+            src="/logo.jpeg"
+            alt="Pessoas Globais"
+            width={120}
+            height={40}
+            className="rounded-sm object-contain"
+            priority
+          />
         </Link>
 
         {/* Desktop Nav */}
