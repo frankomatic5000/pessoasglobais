@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Playfair_Display, DM_Sans, DM_Mono } from "next/font/google";
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { Navbar } from "@/components/layout/Navbar";
@@ -28,6 +29,15 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   title: "Pessoas Globais — A revista dos empreendedores globais",
   description: "Histórias de empreendedores multiculturais, líderes da diáspora e pensadores globais.",
+  metadataBase: new URL('https://pessoasglobais.com'),
+  openGraph: {
+    siteName: 'Pessoas Globais',
+    locale: 'pt_BR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
 };
 
 export default async function RootLayout({
@@ -49,6 +59,9 @@ export default async function RootLayout({
           <WhatsAppFloat />
         </NextIntlClientProvider>
       </body>
+      {process.env.NEXT_PUBLIC_GA_ID && (
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+      )}
     </html>
   );
 }
