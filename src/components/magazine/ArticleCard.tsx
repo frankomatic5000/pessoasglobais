@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 interface ArticleCardProps {
@@ -7,6 +8,8 @@ interface ArticleCardProps {
   author: string
   edition: string
   href: string
+  imageSrc?: string
+  imageAlt?: string
   accentClass?: string
 }
 
@@ -17,20 +20,32 @@ export function ArticleCard({
   author,
   edition,
   href,
+  imageSrc,
+  imageAlt,
   accentClass = 'from-pg-navy-dark to-pg-navy',
 }: ArticleCardProps) {
   return (
     <Link href={href} className="group block no-underline">
       <article className="overflow-hidden rounded-sm border border-pg-border bg-pg-surface transition-shadow hover:shadow-lg">
 
-        {/* Image placeholder — replace with next/image when Sanity is wired */}
-        <div className={`relative aspect-[4/3] overflow-hidden bg-gradient-to-br ${accentClass}`}>
-          <div className="absolute inset-0 flex items-center justify-center opacity-[0.07]">
-            <span className="font-display text-[7rem] font-black text-white leading-none select-none">
-              {category[0]}
-            </span>
-          </div>
-          {/* Category overlay on image */}
+        {/* Image — real photo from Sanity or gradient placeholder */}
+        <div className={`relative aspect-[4/3] overflow-hidden ${!imageSrc ? `bg-gradient-to-br ${accentClass}` : ''}`}>
+          {imageSrc ? (
+            <Image
+              src={imageSrc}
+              alt={imageAlt ?? title}
+              fill
+              className="object-cover transition-transform duration-[400ms] group-hover:scale-[1.04]"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center opacity-[0.07]">
+              <span className="select-none font-display text-[7rem] font-black leading-none text-white">
+                {category[0]}
+              </span>
+            </div>
+          )}
+          {/* Category scrim overlay */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
             <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/90">
               {category}

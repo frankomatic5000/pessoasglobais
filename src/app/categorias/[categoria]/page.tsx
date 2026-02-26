@@ -1,80 +1,48 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
+import { client } from '@/sanity/lib/client'
+import { urlFor } from '@/sanity/lib/image'
+import { categoryArticlesQuery, type ArticleStub } from '@/sanity/lib/queries'
 import { ArticleCard } from '@/components/magazine/ArticleCard'
 
 type PageProps = { params: Promise<{ categoria: string }> }
 
-const CATEGORY_META: Record<string, { name: string; description: string }> = {
-  lideranca: {
-    name: 'Liderança',
-    description: 'Perfis de líderes que estão redefinindo o que significa liderar em escala global.',
-  },
-  negocios: {
-    name: 'Negócios',
-    description: 'Estratégias, modelos e casos de negócios que cruzam fronteiras e culturas.',
-  },
-  cultura: {
-    name: 'Cultura',
-    description: 'A interseção entre identidade cultural e empreendedorismo criativo.',
-  },
-  diaspora: {
-    name: 'Diáspora',
-    description: 'Histórias de brasileiros e multiculturais que constroem impacto fora de suas terras natais.',
-  },
-  tecnologia: {
-    name: 'Tecnologia',
-    description: 'Inovação tecnológica com raízes culturais profundas.',
-  },
+export const revalidate = 60
+
+const CATEGORY_META: Record<string, { name: string; description: string; sanityValue: string }> = {
+  lideranca:  { name: 'Liderança',   description: 'Perfis de líderes que estão redefinindo o que significa liderar em escala global.', sanityValue: 'Liderança' },
+  negocios:   { name: 'Negócios',    description: 'Estratégias, modelos e casos de negócios que cruzam fronteiras e culturas.',        sanityValue: 'Negócios' },
+  cultura:    { name: 'Cultura',     description: 'A interseção entre identidade cultural e empreendedorismo criativo.',               sanityValue: 'Cultura' },
+  diaspora:   { name: 'Diáspora',    description: 'Histórias de brasileiros e multiculturais que constroem impacto além-fronteiras.',  sanityValue: 'Diáspora' },
+  tecnologia: { name: 'Tecnologia',  description: 'Inovação tecnológica com raízes culturais profundas.',                             sanityValue: 'Tecnologia' },
 }
 
-const OTHER_CATEGORIES = [
-  { slug: 'lideranca', name: 'Liderança' },
-  { slug: 'negocios', name: 'Negócios' },
-  { slug: 'cultura', name: 'Cultura' },
-  { slug: 'diaspora', name: 'Diáspora' },
-  { slug: 'tecnologia', name: 'Tecnologia' },
-]
-
-// Static articles — replace with Sanity GROQ filtered query
-const ARTICLES = [
-  {
-    id: 1,
-    category: 'Liderança',
-    title: 'Como Daniela Chaves construiu um império de moda sustentável em três continentes',
-    deck: 'Da favela de Fortaleza ao centro de Paris — herança cultural como vantagem competitiva.',
-    author: 'por Rodrigo Lima',
-    edition: 'Ed. #1',
-    href: '/edicoes/edicao-1/daniela-chaves',
-    accentClass: 'from-pg-navy-dark via-pg-navy to-pg-navy-light',
-  },
-  {
-    id: 2,
-    category: 'Negócios',
-    title: 'O método brasileiro de gestão que o Silicon Valley está adotando',
-    deck: 'Executivos do Vale do Silício descobrem no jeitinho brasileiro uma vantagem competitiva única.',
-    author: 'por Ana Ferreira',
-    edition: 'Ed. #1',
-    href: '/edicoes/edicao-1/metodo-brasileiro',
-    accentClass: 'from-pg-navy-dark via-pg-navy to-pg-navy-light',
-  },
-  {
-    id: 3,
-    category: 'Diáspora',
-    title: 'Lisboa, Dubai ou Toronto: onde os brasileiros estão prosperando mais?',
-    deck: 'Um mapeamento inédito dos destinos preferidos da diáspora empreendedora brasileira.',
-    author: 'por Carlos Mendes',
-    edition: 'Ed. #1',
-    href: '/edicoes/edicao-1/diaspora-destinos',
-    accentClass: 'from-pg-navy to-pg-navy-dark',
-  },
-]
+const OTHER_CATEGORIES = Object.entries(CATEGORY_META).map(([slug, m]) => ({ slug, name: m.name }))
 
 export function generateStaticParams() {
   return Object.keys(CATEGORY_META).map((categoria) => ({ categoria }))
 }
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { categoria } = await params
+  const meta = CATEGORY_META[categoria]
+  if (!meta) return { title: 'Categoria não encontrada' }
+  return {
+    title: `${meta.name} — Pessoas Globais`,
+    description: meta.description,
+  }
+}
+
 export default async function CategoriaPage({ params }: PageProps) {
   const { categoria } = await params
-  const meta = CATEGORY_META[categoria] ?? { name: categoria, description: '' }
+  const meta = CATEGORY_META[categoria]
+  if (!meta) notFound()
+
+  const articles = await client.fetch<ArticleStub[]>(categoryArticlesQuery, {
+    categoria: meta.sanityValue,
+  })
+
   const others = OTHER_CATEGORIES.filter((c) => c.slug !== categoria)
 
   return (
@@ -97,23 +65,30 @@ export default async function CategoriaPage({ params }: PageProps) {
 
       {/* Articles */}
       <section className="mx-auto max-w-7xl px-5 py-12">
-        <p className="mb-6 font-mono text-[11px] uppercase tracking-[0.12em] text-pg-muted">
-          {ARTICLES.length} matéria{ARTICLES.length !== 1 ? 's' : ''}
-        </p>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {ARTICLES.map((article) => (
-            <ArticleCard
-              key={article.id}
-              category={article.category}
-              title={article.title}
-              deck={article.deck}
-              author={article.author}
-              edition={article.edition}
-              href={article.href}
-              accentClass={article.accentClass}
-            />
-          ))}
-        </div>
+        {articles.length === 0 ? (
+          <p className="font-body text-pg-muted">Nenhuma matéria publicada nesta categoria ainda.</p>
+        ) : (
+          <>
+            <p className="mb-6 font-mono text-[11px] uppercase tracking-[0.12em] text-pg-muted">
+              {articles.length} matéria{articles.length !== 1 ? 's' : ''}
+            </p>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {articles.map((a) => (
+                <ArticleCard
+                  key={a._id}
+                  category={a.categoria}
+                  title={a.titulo}
+                  deck={a.linhaFina}
+                  author={`por ${a.autor}`}
+                  edition={`Ed. #${a.edicao.numero}`}
+                  href={`/edicoes/${a.edicao.slug.current}/${a.slug.current}`}
+                  imageSrc={a.imagemCapa ? urlFor(a.imagemCapa).width(800).quality(80).url() : undefined}
+                  imageAlt={a.titulo}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </section>
 
       {/* Other categories */}
@@ -127,7 +102,7 @@ export default async function CategoriaPage({ params }: PageProps) {
               <Link
                 key={cat.slug}
                 href={`/categorias/${cat.slug}`}
-                className="rounded-sm border border-pg-border bg-pg-tag px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-pg-muted no-underline transition-colors hover:bg-pg-red hover:text-white hover:border-pg-red"
+                className="rounded-sm border border-pg-border bg-pg-tag px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-pg-muted no-underline transition-colors hover:border-pg-red hover:bg-pg-red hover:text-white"
               >
                 {cat.name}
               </Link>
