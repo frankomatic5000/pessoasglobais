@@ -1,7 +1,10 @@
 export function WhatsAppFloat() {
+  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
+  if (!number) return null
+
   return (
     <a
-      href="https://wa.me/5511999999999"
+      href={`https://wa.me/${number}`}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Fale conosco pelo WhatsApp"

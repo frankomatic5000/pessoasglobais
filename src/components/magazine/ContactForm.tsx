@@ -12,13 +12,21 @@ const LABEL = 'mb-1 block font-mono text-[10px] uppercase tracking-[0.12em] text
 export function ContactForm() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
-    // Replace with actual Formspree endpoint:
-    // await fetch('https://formspree.io/f/YOUR_FORM_ID', { method: 'POST', body: new FormData(e.currentTarget), headers: { Accept: 'application/json' } })
-    await new Promise((r) => setTimeout(r, 900))
+    const formspreeId = process.env.NEXT_PUBLIC_FORMSPREE_ID
+    if (formspreeId) {
+      await fetch(`https://formspree.io/f/${formspreeId}`, {
+        method: 'POST',
+        body: new FormData(e.currentTarget),
+        headers: { Accept: 'application/json' },
+      })
+    } else {
+      await new Promise((r) => setTimeout(r, 900))
+    }
     setLoading(false)
     setSubmitted(true)
   }
@@ -102,17 +110,19 @@ export function ContactForm() {
         >
           {loading ? 'Enviando...' : 'Enviar candidatura →'}
         </button>
-        <p className="mt-3 font-mono text-[10px] text-pg-muted">
-          Ou fale diretamente:{' '}
-          <a
-            href="https://wa.me/5511999999999?text=Olá!%20Tenho%20interesse%20em%20ter%20minha%20matéria%20na%20Pessoas%20Globais."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-pg-red no-underline hover:underline"
-          >
-            WhatsApp ↗
-          </a>
-        </p>
+        {waNumber && (
+          <p className="mt-3 font-mono text-[10px] text-pg-muted">
+            Ou fale diretamente:{' '}
+            <a
+              href={`https://wa.me/${waNumber}?text=Ol%C3%A1!%20Tenho%20interesse%20em%20ter%20minha%20mat%C3%A9ria%20na%20Pessoas%20Globais.`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-pg-red no-underline hover:underline"
+            >
+              WhatsApp ↗
+            </a>
+          </p>
+        )}
       </div>
     </form>
   )
