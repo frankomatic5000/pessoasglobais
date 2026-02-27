@@ -17,8 +17,8 @@ export function Navbar() {
           <Image
             src="/logo.png"
             alt="Pessoas Globais"
-            width={542}
-            height={490}
+            width={966}
+            height={246}
             className="h-10 w-auto object-contain"
             priority
           />
