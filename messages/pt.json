@@ -1,0 +1,17 @@
+{
+  "nav": {
+    "edicoes": "Edições",
+    "sobre": "Sobre",
+    "tenha_sua_materia": "Tenha sua Matéria"
+  },
+  "common": {
+    "read_more": "Leia mais",
+    "edition": "Edição",
+    "published": "Publicada",
+    "coming_soon": "Em breve",
+    "share": "Compartilhar",
+    "loading": "Carregando...",
+    "reading_time": "{minutes} min de leitura",
+    "read_also": "Leia também"
+  }
+}
