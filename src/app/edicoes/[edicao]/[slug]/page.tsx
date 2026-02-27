@@ -127,8 +127,8 @@ export default async function ArticlePage({ params }: PageProps) {
 
       {/* ── Cover image ── */}
       {coverUrl ? (
-        <div className="relative h-[300px] w-full overflow-hidden md:h-[460px]">
-          <Image src={coverUrl} alt={article.titulo} fill className="object-cover object-top" sizes="100vw" priority />
+        <div className="relative h-48 w-full overflow-hidden md:h-72">
+          <Image src={coverUrl} alt={article.titulo} fill className="object-cover object-center" sizes="100vw" priority />
           {article.legendaImagem && (
             <p className="absolute bottom-3 left-0 right-0 text-center font-body text-[13px] text-white/70">
               {article.legendaImagem}
