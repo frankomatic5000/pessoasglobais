@@ -9,7 +9,7 @@ export function Navbar() {
   const [lang, setLang] = useState<'PT' | 'EN'>('PT')
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-pg-navy shadow-[0_2px_20px_rgba(0,0,0,0.3)]">
+    <nav className="sticky top-0 z-50 w-full bg-pg-navy/95 backdrop-blur-md shadow-[0_2px_20px_rgba(0,0,0,0.3)]">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
 
         {/* Logo */}
@@ -41,6 +41,17 @@ export function Navbar() {
           >
             Tenha sua Matéria
           </Link>
+
+          {/* Search */}
+          <button
+            className="rounded p-1.5 text-white/70 transition-colors hover:text-white"
+            aria-label="Pesquisar"
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </button>
 
           {/* Lang switcher */}
           <div className="flex items-center gap-1.5 rounded-sm border border-white/20 px-2.5 py-1.5">
