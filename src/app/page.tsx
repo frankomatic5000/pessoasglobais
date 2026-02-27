@@ -14,26 +14,12 @@ import {
 } from '@/sanity/lib/queries'
 import { EditionStrip } from '@/components/magazine/EditionStrip'
 import { CategoriesBar } from '@/components/magazine/CategoriesBar'
-import { ArticleCard } from '@/components/magazine/ArticleCard'
+import { BentoGrid } from '@/components/magazine/BentoGrid'
+import { MediaBlock } from '@/components/magazine/MediaBlock'
 import { NewsletterSignup } from '@/components/magazine/NewsletterSignup'
 import { CTABanner } from '@/components/magazine/CTABanner'
 
 export const revalidate = 60
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function articleCardProps(a: ArticleStub) {
-  return {
-    category: a.categoria,
-    title: a.titulo,
-    deck: a.linhaFina,
-    author: `por ${a.autor}`,
-    edition: `Ed. #${a.edicao.numero}`,
-    href: `/edicoes/${a.edicao.slug.current}/${a.slug.current}`,
-    imageSrc: a.imagemCapa ? urlFor(a.imagemCapa).width(800).quality(80).url() : undefined,
-    imageAlt: a.titulo,
-  }
-}
 
 // ─── Page ────────────────────────────────────────────────────────────────────
 
@@ -141,32 +127,16 @@ export default async function HomePage() {
       {/* 3 · Categories Bar */}
       <CategoriesBar />
 
-      {/* 4 · Article Grid */}
-      {gridArticles.length > 0 && (
-        <section className="mx-auto max-w-7xl px-6 py-12">
-          <div className="mb-8 flex items-baseline justify-between">
-            <h2 className="font-display text-[1.4rem] font-bold text-pg-navy">
-              Últimas matérias
-            </h2>
-            <Link
-              href="/edicoes"
-              className="font-mono text-[11px] uppercase tracking-[0.12em] text-pg-muted no-underline transition-colors hover:text-pg-red"
-            >
-              Ver todas →
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {gridArticles.map((a) => (
-              <ArticleCard key={a._id} {...articleCardProps(a)} />
-            ))}
-          </div>
-        </section>
-      )}
+      {/* 4 · Bento Grid */}
+      <BentoGrid articles={gridArticles} />
 
-      {/* 5 · Newsletter */}
+      {/* 5 · Media / Podcast Block */}
+      <MediaBlock />
+
+      {/* 6 · Newsletter */}
       <NewsletterSignup />
 
-      {/* 6 · CTA Banner */}
+      {/* 7 · CTA Banner */}
       <CTABanner />
     </main>
   )
