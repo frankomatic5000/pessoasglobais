@@ -6,9 +6,13 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { setLocale } from '@/app/actions'
 
-export function Navbar() {
+interface NavbarProps {
+  initialLang?: 'PT' | 'EN'
+}
+
+export function Navbar({ initialLang = 'PT' }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [lang, setLang] = useState<'PT' | 'EN'>('PT')
+  const [lang, setLang] = useState<'PT' | 'EN'>(initialLang)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
