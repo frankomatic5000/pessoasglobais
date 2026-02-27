@@ -44,16 +44,7 @@ export const article = {
     { name: 'legendaImagem', title: 'Legenda da Imagem', type: 'string', group: 'media' },
     { name: 'slug', title: 'Slug (URL)', type: 'slug', group: 'meta', options: { source: 'titulo', maxLength: 96 }, validation: (R: any) => R.required() },
     { name: 'edicao', title: 'Edição', type: 'reference', group: 'meta', to: [{ type: 'edicao' }], validation: (R: any) => R.required() },
-    { name: 'categoria', title: 'Categoria', type: 'string', group: 'meta',
-      options: { list: [
-        { title: 'Liderança',  value: 'Liderança' },
-        { title: 'Negócios',   value: 'Negócios' },
-        { title: 'Cultura',    value: 'Cultura' },
-        { title: 'Diáspora',   value: 'Diáspora' },
-        { title: 'Tecnologia', value: 'Tecnologia' },
-      ], layout: 'radio' },
-      validation: (R: any) => R.required()
-    },
+    { name: 'categoria', title: 'Categoria', type: 'reference', group: 'meta', to: [{ type: 'categoria' }], validation: (R: any) => R.required() },
     { name: 'entrevistado', title: 'Entrevistado', type: 'reference', group: 'meta', to: [{ type: 'pessoa' }] },
     { name: 'autor', title: 'Autor', type: 'string', group: 'meta', initialValue: 'Equipe Pessoas Globais' },
     { name: 'dataPublicacao', title: 'Data de Publicação', type: 'date', group: 'meta', validation: (R: any) => R.required() },
