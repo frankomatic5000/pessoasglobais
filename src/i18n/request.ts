@@ -1,10 +1,15 @@
 import { getRequestConfig } from 'next-intl/server'
+import { cookies } from 'next/headers'
 
-// Without i18n routing: serve PT-BR for all paths.
-// When EN routing is added later, this config will detect locale from the URL.
 export default getRequestConfig(async () => {
-  return {
-    locale: 'pt',
-    messages: (await import('../../messages/pt.json')).default,
-  }
+  const cookieStore = await cookies()
+  const raw = cookieStore.get('locale')?.value
+  const locale = raw === 'en' ? 'en' : 'pt'
+
+  const messages =
+    locale === 'en'
+      ? (await import('../../messages/en.json')).default
+      : (await import('../../messages/pt.json')).default
+
+  return { locale, messages }
 })
