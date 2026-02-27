@@ -4,9 +4,7 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { cookies } from 'next/headers'
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/shared/Footer";
-import { WhatsAppFloat } from "@/components/shared/WhatsAppFloat";
+import { LayoutShell } from "@/components/layout/LayoutShell";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -56,10 +54,9 @@ export default async function RootLayout({
         className={`${playfair.variable} ${dmSans.variable} ${dmMono.variable} antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
-          <Navbar initialLang={locale === 'en' ? 'EN' : 'PT'} />
-          {children}
-          <Footer />
-          <WhatsAppFloat />
+          <LayoutShell initialLang={locale === 'en' ? 'EN' : 'PT'}>
+            {children}
+          </LayoutShell>
         </NextIntlClientProvider>
       </body>
       {process.env.NEXT_PUBLIC_GA_ID && (
