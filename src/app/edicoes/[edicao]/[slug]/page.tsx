@@ -127,8 +127,8 @@ export default async function ArticlePage({ params }: PageProps) {
 
       {/* ── Cover image ── */}
       {coverUrl ? (
-        <div className="relative aspect-[16/7] w-full overflow-hidden">
-          <Image src={coverUrl} alt={article.titulo} fill className="object-cover" sizes="100vw" priority />
+        <div className="relative w-full max-h-[500px] aspect-[16/7] overflow-hidden">
+          <Image src={coverUrl} alt={article.titulo} fill className="object-cover object-top" sizes="100vw" priority />
           {article.legendaImagem && (
             <p className="absolute bottom-3 left-0 right-0 text-center font-body text-[13px] text-white/70">
               {article.legendaImagem}
@@ -136,7 +136,7 @@ export default async function ArticlePage({ params }: PageProps) {
           )}
         </div>
       ) : (
-        <div className="aspect-[16/7] w-full bg-gradient-to-r from-pg-navy-dark via-pg-navy to-pg-navy-light" />
+        <div className="aspect-[16/7] w-full max-h-[500px] bg-gradient-to-r from-pg-navy-dark via-pg-navy to-pg-navy-light" />
       )}
 
       {/* ── Article body ── */}
