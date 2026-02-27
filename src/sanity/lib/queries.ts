@@ -6,6 +6,12 @@ import type { PortableTextBlock } from '@portabletext/react'
 
 export interface SanitySlug { current: string }
 
+export interface Categoria {
+  nome: string
+  slug: SanitySlug
+  descricao?: string
+}
+
 export interface PessoaStub {
   nome: string
   titulo?: string
@@ -36,7 +42,7 @@ export interface ArticleStub {
   titulo: string
   linhaFina: string
   slug: SanitySlug
-  categoria: string
+  categoria: Categoria
   autor: string
   dataPublicacao: string
   imagemCapa?: SanityImageSource
@@ -78,7 +84,7 @@ const ARTICLE_STUB = `
   titulo,
   linhaFina,
   slug,
-  categoria,
+  "categoria": categoria->{ nome, slug },
   autor,
   dataPublicacao,
   imagemCapa,
@@ -154,9 +160,9 @@ export const articleQuery = groq`
   }
 `
 
-/** Articles filtered by category */
+/** Articles filtered by category slug */
 export const categoryArticlesQuery = groq`
-  *[_type=="article" && categoria==$categoria && idioma=="pt-BR"] | order(dataPublicacao desc){
+  *[_type=="article" && categoria->slug.current==$categoria && idioma=="pt-BR"] | order(dataPublicacao desc){
     ${ARTICLE_STUB}
   }
 `
@@ -174,9 +180,14 @@ export const allEditionSlugsQuery = groq`
   *[_type=="edicao" && publicada==true]{ "slug": slug.current }
 `
 
-/** Related articles (same category, different slug) */
+/** Related articles (same category slug, different slug) */
 export const relatedArticlesQuery = groq`
-  *[_type=="article" && categoria==$categoria && slug.current!=$slug && idioma=="pt-BR"] | order(dataPublicacao desc)[0...3]{
+  *[_type=="article" && categoria->slug.current==$categoria && slug.current!=$slug && idioma=="pt-BR"] | order(dataPublicacao desc)[0...3]{
     ${ARTICLE_STUB}
   }
+`
+
+/** All categories sorted by ordem */
+export const allCategoriasQuery = groq`
+  *[_type=="categoria"] | order(ordem asc){ nome, slug, descricao }
 `

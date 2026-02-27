@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 function toCardProps(a: ArticleStub) {
   return {
-    category: a.categoria,
+    category: a.categoria?.nome ?? '',
     title: a.titulo,
     deck: a.linhaFina,
     author: `por ${a.autor}`,
@@ -69,7 +69,7 @@ export default async function ArticlePage({ params }: PageProps) {
   if (!article) notFound()
 
   const relatedArticles = await client.fetch<ArticleStub[]>(relatedArticlesQuery, {
-    categoria: article.categoria,
+    categoria: article.categoria?.slug.current,
     slug: article.slug.current,
   })
 
@@ -93,7 +93,7 @@ export default async function ArticlePage({ params }: PageProps) {
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <EditionBadge number={article.edicao.numero} theme={format(new Date(article.dataPublicacao), "MMMM yyyy", { locale: ptBR })} />
             <span className="rounded-sm bg-pg-tag px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.15em] text-pg-muted">
-              {article.categoria}
+              {article.categoria?.nome}
             </span>
           </div>
 

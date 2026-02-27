@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 function toCardProps(a: ArticleStub) {
   return {
-    category: a.categoria,
+    category: a.categoria?.nome ?? '',
     title: a.titulo,
     deck: a.linhaFina,
     author: `por ${a.autor}`,

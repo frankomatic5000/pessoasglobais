@@ -57,7 +57,7 @@ export function BentoGrid({ articles }: BentoGridProps) {
               {/* Content */}
               <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8">
                 <span className="mb-3 inline-block rounded-sm bg-pg-red px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-white">
-                  {hero.categoria}
+                  {hero.categoria?.nome}
                 </span>
                 <h3 className="mb-2 font-display text-2xl font-bold leading-[1.15] text-white transition-colors group-hover:text-pg-red-light lg:text-3xl">
                   {hero.titulo}
@@ -78,7 +78,7 @@ export function BentoGrid({ articles }: BentoGridProps) {
             >
               <div className="h-full rounded-sm border border-pg-border bg-pg-surface p-6 transition-all hover:-translate-y-1 hover:shadow-lg">
                 <span className="mb-4 inline-block rounded-sm bg-pg-tag px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-pg-muted">
-                  {article.categoria}
+                  {article.categoria?.nome}
                 </span>
                 <h3 className="mb-2 font-display text-xl font-bold leading-snug text-pg-navy transition-colors group-hover:text-pg-red">
                   {article.titulo}

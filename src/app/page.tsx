@@ -8,9 +8,11 @@ import {
   featuredArticleQuery,
   homepageGridQuery,
   allEditionsQuery,
+  allCategoriasQuery,
   type Article,
   type ArticleStub,
   type Edicao,
+  type Categoria,
 } from '@/sanity/lib/queries'
 import { EditionStrip } from '@/components/magazine/EditionStrip'
 import { CategoriesBar } from '@/components/magazine/CategoriesBar'
@@ -24,10 +26,11 @@ export const revalidate = 60
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
-  const [featured, gridArticles, editions] = await Promise.all([
+  const [featured, gridArticles, editions, categorias] = await Promise.all([
     client.fetch<Article | null>(featuredArticleQuery),
     client.fetch<ArticleStub[]>(homepageGridQuery),
     client.fetch<Edicao[]>(allEditionsQuery),
+    client.fetch<Categoria[]>(allCategoriasQuery),
   ])
 
   return (
@@ -57,7 +60,7 @@ export default async function HomePage() {
             {/* Edition badge */}
             <div className="absolute left-6 top-6 z-10">
               <span className="inline-block rounded-sm bg-pg-red px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-white">
-                Ed. #{featured.edicao.numero} · {featured.categoria}
+                Ed. #{featured.edicao.numero} · {featured.categoria?.nome}
               </span>
             </div>
 
@@ -68,7 +71,7 @@ export default async function HomePage() {
           {/* Right — content */}
           <div className="flex flex-col justify-center border-l-4 border-pg-red bg-pg-surface px-8 py-10 md:px-12">
             <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.15em] text-pg-red">
-              {featured.categoria}
+              {featured.categoria?.nome}
             </p>
             <h1 className="mb-4 font-display text-[1.85rem] font-black leading-[1.05] text-pg-navy md:text-[2.25rem]">
               {featured.titulo}
@@ -125,7 +128,7 @@ export default async function HomePage() {
       )}
 
       {/* 3 · Categories Bar */}
-      <CategoriesBar />
+      <CategoriesBar categories={categorias} />
 
       {/* 4 · Bento Grid */}
       <BentoGrid articles={gridArticles} />

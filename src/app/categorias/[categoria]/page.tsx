@@ -10,12 +10,12 @@ type PageProps = { params: Promise<{ categoria: string }> }
 
 export const revalidate = 60
 
-const CATEGORY_META: Record<string, { name: string; description: string; sanityValue: string }> = {
-  lideranca:  { name: 'Liderança',   description: 'Perfis de líderes que estão redefinindo o que significa liderar em escala global.', sanityValue: 'Liderança' },
-  negocios:   { name: 'Negócios',    description: 'Estratégias, modelos e casos de negócios que cruzam fronteiras e culturas.',        sanityValue: 'Negócios' },
-  cultura:    { name: 'Cultura',     description: 'A interseção entre identidade cultural e empreendedorismo criativo.',               sanityValue: 'Cultura' },
-  diaspora:   { name: 'Diáspora',    description: 'Histórias de brasileiros e multiculturais que constroem impacto além-fronteiras.',  sanityValue: 'Diáspora' },
-  tecnologia: { name: 'Tecnologia',  description: 'Inovação tecnológica com raízes culturais profundas.',                             sanityValue: 'Tecnologia' },
+const CATEGORY_META: Record<string, { name: string; description: string }> = {
+  lideranca:  { name: 'Liderança',   description: 'Perfis de líderes que estão redefinindo o que significa liderar em escala global.' },
+  negocios:   { name: 'Negócios',    description: 'Estratégias, modelos e casos de negócios que cruzam fronteiras e culturas.' },
+  cultura:    { name: 'Cultura',     description: 'A interseção entre identidade cultural e empreendedorismo criativo.' },
+  diaspora:   { name: 'Diáspora',    description: 'Histórias de brasileiros e multiculturais que constroem impacto além-fronteiras.' },
+  tecnologia: { name: 'Tecnologia',  description: 'Inovação tecnológica com raízes culturais profundas.' },
 }
 
 const OTHER_CATEGORIES = Object.entries(CATEGORY_META).map(([slug, m]) => ({ slug, name: m.name }))
@@ -40,7 +40,7 @@ export default async function CategoriaPage({ params }: PageProps) {
   if (!meta) notFound()
 
   const articles = await client.fetch<ArticleStub[]>(categoryArticlesQuery, {
-    categoria: meta.sanityValue,
+    categoria,
   })
 
   const others = OTHER_CATEGORIES.filter((c) => c.slug !== categoria)
@@ -76,7 +76,7 @@ export default async function CategoriaPage({ params }: PageProps) {
               {articles.map((a) => (
                 <ArticleCard
                   key={a._id}
-                  category={a.categoria}
+                  category={a.categoria?.nome ?? ''}
                   title={a.titulo}
                   deck={a.linhaFina}
                   author={`por ${a.autor}`}
