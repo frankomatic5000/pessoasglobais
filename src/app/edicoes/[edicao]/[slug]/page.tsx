@@ -75,7 +75,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
   const articleUrl = `https://pessoasglobais.com/edicoes/${edicao}/${slug}`
   const coverUrl = article.imagemCapa
-    ? urlFor(article.imagemCapa).width(1440).height(630).quality(85).url()
+    ? urlFor(article.imagemCapa).width(1440).quality(85).url()
     : null
   const authorInitial = article.autor?.[0]?.toUpperCase() ?? 'A'
   const dateLabel = article.dataPublicacao
@@ -127,8 +127,8 @@ export default async function ArticlePage({ params }: PageProps) {
 
       {/* ── Cover image ── */}
       {coverUrl ? (
-        <div className="relative h-48 w-full overflow-hidden md:h-72">
-          <Image src={coverUrl} alt={article.titulo} fill className="object-cover object-center" sizes="100vw" priority />
+        <div className="relative h-40 w-full overflow-hidden md:h-56">
+          <Image src={coverUrl} alt={article.titulo} fill className="object-cover object-top" sizes="100vw" priority />
           {article.legendaImagem && (
             <p className="absolute bottom-3 left-0 right-0 text-center font-body text-[13px] text-white/70">
               {article.legendaImagem}
