@@ -75,7 +75,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
   const articleUrl = `https://pessoasglobais.com/edicoes/${edicao}/${slug}`
   const coverUrl = article.imagemCapa
-    ? urlFor(article.imagemCapa).width(1440).quality(85).url()
+    ? urlFor(article.imagemCapa).width(1440).height(480).fit('crop').crop('focalpoint').quality(85).url()
     : null
   const authorInitial = article.autor?.[0]?.toUpperCase() ?? 'A'
   const dateLabel = article.dataPublicacao
@@ -125,10 +125,10 @@ export default async function ArticlePage({ params }: PageProps) {
         </div>
       </header>
 
-      {/* ── Cover image ── */}
+      {/* ── Cover image — always 3:1 ratio, Sanity crops to focalpoint ── */}
       {coverUrl ? (
-        <div className="relative h-40 w-full overflow-hidden md:h-56">
-          <Image src={coverUrl} alt={article.titulo} fill className="object-cover object-top" sizes="100vw" priority />
+        <div className="relative aspect-[3/1] w-full overflow-hidden">
+          <Image src={coverUrl} alt={article.titulo} fill className="object-cover" sizes="100vw" priority />
           {article.legendaImagem && (
             <p className="absolute bottom-3 left-0 right-0 text-center font-body text-[13px] text-white/70">
               {article.legendaImagem}
@@ -136,7 +136,7 @@ export default async function ArticlePage({ params }: PageProps) {
           )}
         </div>
       ) : (
-        <div className="h-[300px] w-full bg-gradient-to-r from-pg-navy-dark via-pg-navy to-pg-navy-light md:h-[460px]" />
+        <div className="aspect-[3/1] w-full bg-gradient-to-r from-pg-navy-dark via-pg-navy to-pg-navy-light" />
       )}
 
       {/* ── Article body ── */}
