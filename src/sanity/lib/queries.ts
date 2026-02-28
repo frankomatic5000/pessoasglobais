@@ -191,3 +191,8 @@ export const relatedArticlesQuery = groq`
 export const allCategoriasQuery = groq`
   *[_type=="categoria"] | order(ordem asc){ nome, slug, descricao }
 `
+
+/** Single category by slug */
+export const categoriaBySlugQuery = groq`
+  *[_type=="categoria" && slug.current==$slug][0]{ nome, slug, descricao }
+`

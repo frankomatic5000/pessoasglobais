@@ -3,47 +3,46 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { client } from '@/sanity/lib/client'
 import { urlFor } from '@/sanity/lib/image'
-import { categoryArticlesQuery, type ArticleStub } from '@/sanity/lib/queries'
+import {
+  categoryArticlesQuery,
+  allCategoriasQuery,
+  categoriaBySlugQuery,
+  type ArticleStub,
+  type Categoria,
+} from '@/sanity/lib/queries'
 import { ArticleCard } from '@/components/magazine/ArticleCard'
 
 type PageProps = { params: Promise<{ categoria: string }> }
 
 export const revalidate = 60
 
-const CATEGORY_META: Record<string, { name: string; description: string }> = {
-  lideranca:  { name: 'Liderança',   description: 'Perfis de líderes que estão redefinindo o que significa liderar em escala global.' },
-  negocios:   { name: 'Negócios',    description: 'Estratégias, modelos e casos de negócios que cruzam fronteiras e culturas.' },
-  cultura:    { name: 'Cultura',     description: 'A interseção entre identidade cultural e empreendedorismo criativo.' },
-  diaspora:   { name: 'Diáspora',    description: 'Histórias de brasileiros e multiculturais que constroem impacto além-fronteiras.' },
-  tecnologia: { name: 'Tecnologia',  description: 'Inovação tecnológica com raízes culturais profundas.' },
-}
-
-const OTHER_CATEGORIES = Object.entries(CATEGORY_META).map(([slug, m]) => ({ slug, name: m.name }))
-
-export function generateStaticParams() {
-  return Object.keys(CATEGORY_META).map((categoria) => ({ categoria }))
+export async function generateStaticParams() {
+  const cats = await client.fetch<Categoria[]>(allCategoriasQuery)
+  return cats.map((c) => ({ categoria: c.slug.current }))
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { categoria } = await params
-  const meta = CATEGORY_META[categoria]
-  if (!meta) return { title: 'Categoria não encontrada' }
+  const { categoria: slug } = await params
+  const cat = await client.fetch<Categoria | null>(categoriaBySlugQuery, { slug })
+  if (!cat) return { title: 'Categoria não encontrada' }
   return {
-    title: `${meta.name} — Pessoas Globais`,
-    description: meta.description,
+    title: `${cat.nome} — Pessoas Globais`,
+    description: cat.descricao ?? `Matérias sobre ${cat.nome} na revista Pessoas Globais.`,
   }
 }
 
 export default async function CategoriaPage({ params }: PageProps) {
-  const { categoria } = await params
-  const meta = CATEGORY_META[categoria]
-  if (!meta) notFound()
+  const { categoria: slug } = await params
 
-  const articles = await client.fetch<ArticleStub[]>(categoryArticlesQuery, {
-    categoria,
-  })
+  const [cat, articles, allCats] = await Promise.all([
+    client.fetch<Categoria | null>(categoriaBySlugQuery, { slug }),
+    client.fetch<ArticleStub[]>(categoryArticlesQuery, { categoria: slug }),
+    client.fetch<Categoria[]>(allCategoriasQuery),
+  ])
 
-  const others = OTHER_CATEGORIES.filter((c) => c.slug !== categoria)
+  if (!cat) notFound()
+
+  const others = allCats.filter((c) => c.slug.current !== slug)
 
   return (
     <main className="min-h-screen bg-pg-paper">
@@ -55,11 +54,13 @@ export default async function CategoriaPage({ params }: PageProps) {
             Categoria
           </p>
           <h1 className="mb-3 font-display text-[2.5rem] font-black leading-[1.05] text-white">
-            {meta.name}
+            {cat.nome}
           </h1>
-          <p className="font-body text-[17px] leading-[1.65] text-white/70">
-            {meta.description}
-          </p>
+          {cat.descricao && (
+            <p className="font-body text-[17px] leading-[1.65] text-white/70">
+              {cat.descricao}
+            </p>
+          )}
         </div>
       </header>
 
@@ -92,24 +93,26 @@ export default async function CategoriaPage({ params }: PageProps) {
       </section>
 
       {/* Other categories */}
-      <section className="border-t border-pg-border px-5 py-10">
-        <div className="mx-auto max-w-7xl">
-          <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.12em] text-pg-muted">
-            Outras categorias
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {others.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={`/categorias/${cat.slug}`}
-                className="rounded-sm border border-pg-border bg-pg-tag px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-pg-muted no-underline transition-colors hover:border-pg-red hover:bg-pg-red hover:text-white"
-              >
-                {cat.name}
-              </Link>
-            ))}
+      {others.length > 0 && (
+        <section className="border-t border-pg-border px-5 py-10">
+          <div className="mx-auto max-w-7xl">
+            <p className="mb-4 font-mono text-[11px] uppercase tracking-[0.12em] text-pg-muted">
+              Outras categorias
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {others.map((c) => (
+                <Link
+                  key={c.slug.current}
+                  href={`/categorias/${c.slug.current}`}
+                  className="rounded-sm border border-pg-border bg-pg-tag px-4 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-pg-muted no-underline transition-colors hover:border-pg-red hover:bg-pg-red hover:text-white"
+                >
+                  {c.nome}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </main>
   )
 }
